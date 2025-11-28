@@ -6,7 +6,7 @@ public abstract partial class MagicVariable : IMagicVariable
 {
     protected const char DelimiterToken = '#';
 
-    protected string _identifier;
+    public string Identifier { get; protected set; }
 
     protected MagicVariable(string identifier)
     {
@@ -16,13 +16,13 @@ public abstract partial class MagicVariable : IMagicVariable
 
         }
 
-        _identifier = identifier;
+        Identifier = $"{DelimiterToken}{identifier}{DelimiterToken}";
     }
 
     [GeneratedRegex(@"^[A-Z][A-Z]+")]
     private static partial Regex ValidIdentifierName();
 
-    public bool Matches(string input) => Regex.IsMatch(input, $@"\{DelimiterToken}{_identifier}\{DelimiterToken}");
+    public bool Matches(string input) => Regex.IsMatch(input, $@"\{Identifier}");
 
     public abstract string GetValue();
 }
