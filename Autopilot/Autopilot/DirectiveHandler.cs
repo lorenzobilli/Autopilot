@@ -6,9 +6,11 @@ namespace Autopilot;
 
 public class DirectiveHandler
 {
-    private readonly IList<Directive> _directives;
-
     private readonly IList<IMagicVariable> _magicVariables;
+
+    public string ExecutionEnvironment { get; private set; }
+
+    public IList<Directive> Directives { get; private set; }
 
     public DirectiveHandler(string file)
     {
@@ -22,8 +24,11 @@ public class DirectiveHandler
         }
 
         var json = File.ReadAllText(file);
-        _directives = JsonSerializer.Deserialize(json, DirectiveSourceGenerationContext.Default.IListDirective)
+        var directiveList = JsonSerializer.Deserialize(json, DirectiveListSourceGenerationContext.Default.DirectiveList)
             ?? throw new InvalidOperationException("Failed to deserialize directives from file.");
+
+        ExecutionEnvironment = directiveList.ExecutionEnvironment;
+        Directives = directiveList.Directives;
 
         _magicVariables =
         [
@@ -33,7 +38,7 @@ public class DirectiveHandler
 
     public void ParseMagicVariables()
     {
-        foreach (var directive in _directives)
+        foreach (var directive in Directives)
         {
             foreach (var magicVariable in _magicVariables)
             {
