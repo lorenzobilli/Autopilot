@@ -18,4 +18,5 @@ public class Directive
 }
 
 [JsonSerializable(typeof(Directive))]
+[JsonSerializable(typeof(IList<Directive>))]
 internal partial class DirectiveSourceGenerationContext : JsonSerializerContext { }

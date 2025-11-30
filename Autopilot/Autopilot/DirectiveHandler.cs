@@ -28,11 +28,18 @@ public class DirectiveHandler
         DirectivesFile = file;
 
         var json = File.ReadAllText(DirectivesFile);
-        var directiveList = JsonSerializer.Deserialize(json, DirectiveListSourceGenerationContext.Default.DirectiveList)
-            ?? throw new InvalidOperationException("Failed to deserialize directives from file.");
 
-        EnvironmentManager = new EnvironmentManager(directiveList.ExecutionEnvironment);
-        Directives = directiveList.Directives;
+        try
+        {
+            Directives = JsonSerializer.Deserialize(json, DirectiveSourceGenerationContext.Default.IListDirective)
+                ?? throw new ArgumentException("Failed to deserialize directives from file.");
+        }
+        catch (JsonException)
+        {
+            throw new ArgumentException("Invalid JSON file given");
+        }
+
+        EnvironmentManager = new EnvironmentManager(null);
 
         _magicVariables = [new Home()];
     }

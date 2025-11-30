@@ -33,7 +33,7 @@ public class Executor
         }
     }
 
-    private async Task Retrieve(IList<Directive> directives)
+    private void Retrieve(IList<Directive> directives)
     {
         var targetBaseDirectory = Path.Combine(
             WorkingDirectory,
