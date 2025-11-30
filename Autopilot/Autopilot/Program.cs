@@ -5,21 +5,17 @@ namespace Autopilot;
 
 public class Program
 {
-    private static readonly string _fileName = "autopilot.json";
-
-    private static ExecutionMode _executionMode;
-
     public static void Main(string[] args)
     {
         Console.WriteLine("Welcome to Autopilot!");
 
-        if (args.Length != 1)
+        if (args.Length != 2)
         {
             Console.WriteLine(BuildErrorMessage());
             return;
         }
 
-        if (!Enum.TryParse(args[0], true, out _executionMode))
+        if (!Enum.TryParse(args[1], true, out ExecutionMode executionMode))
         {
             Console.WriteLine(BuildErrorMessage());
             return;
@@ -27,12 +23,13 @@ public class Program
 
         try
         {
-            var directiveHandler = new DirectiveHandler(_fileName);
+            var directiveHandler = new DirectiveHandler(args[0]);
+
             directiveHandler.ParseMagicVariables();
 
             var executor = new Executor(directiveHandler)
             {
-                Mode = _executionMode
+                Mode = executionMode
             };
 
             executor.Execute();
@@ -46,7 +43,7 @@ public class Program
 
     private static string BuildErrorMessage()
     {
-        var errorMessage = new StringBuilder($"Usage: Autopilot <execution mode>. Valid execution modes: ");
+        var errorMessage = new StringBuilder($"Usage: Autopilot <directives .json file> <execution mode>. Valid execution modes: ");
         var modes = Enum.GetNames<ExecutionMode>();
 
         for (var i = 0; i < modes.Length; i++)

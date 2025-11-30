@@ -4,29 +4,21 @@ namespace Autopilot.Extensions;
 
 public static class FileInfoExtension
 {
-    extension(FileInfo? source)
+    public static bool Identical(this FileInfo source, FileInfo other)
     {
-        public static bool operator ==(FileInfo? left, FileInfo? right)
+        if (source is null || other is null)
         {
-            if (left is null || right is null)
-            {
-                return false;
-            }
-
-            if (!left.Exists || !right.Exists)
-            {
-                return false;
-            }
-
-            var leftHash = MD5.Create().ComputeHash(left.OpenRead());
-            var rightHash = MD5.Create().ComputeHash(right.OpenRead());
-
-            return leftHash.SequenceEqual(rightHash);
+            return false;
         }
 
-        public static bool operator !=(FileInfo? left, FileInfo? right)
+        if (!source.Exists || !other.Exists)
         {
-            return !(left == right);
+            return false;
         }
+
+        var leftHash = MD5.Create().ComputeHash(source.OpenRead());
+        var rightHash = MD5.Create().ComputeHash(other.OpenRead());
+
+        return leftHash.SequenceEqual(rightHash);
     }
 }

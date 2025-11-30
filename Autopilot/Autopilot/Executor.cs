@@ -1,12 +1,23 @@
-﻿using Autopilot.Model;
+﻿using Autopilot.Extensions;
+using Autopilot.Model;
 
 namespace Autopilot;
 
-public class Executor(DirectiveHandler directiveHandler)
+public class Executor
 {
-    private readonly DirectiveHandler _directiveHandler = directiveHandler;
+    private readonly string WorkingDirectory;
 
-    private readonly EnvironmentManager _environmentManager = directiveHandler.EnvironmentManager;
+    private readonly DirectiveHandler _directiveHandler;
+
+    private readonly EnvironmentManager _environmentManager;
+
+    public Executor(DirectiveHandler directiveHandler)
+    {
+        _directiveHandler = directiveHandler;
+        _environmentManager = directiveHandler.EnvironmentManager;
+        WorkingDirectory = new FileInfo(_directiveHandler.DirectivesFile).DirectoryName ??
+            throw new ApplicationException("Unable to retrieve working directory from given directives file");
+    }
 
     public ExecutionMode Mode { get; set; }
 
@@ -22,10 +33,10 @@ public class Executor(DirectiveHandler directiveHandler)
         }
     }
 
-    private void Retrieve(IList<Directive> directives)
+    private async Task Retrieve(IList<Directive> directives)
     {
         var targetBaseDirectory = Path.Combine(
-            Directory.GetCurrentDirectory(),
+            WorkingDirectory,
             _environmentManager.Environment
         );
 
@@ -50,18 +61,18 @@ public class Executor(DirectiveHandler directiveHandler)
                 continue;
             }
 
-            if (target == source)
+            if (source.Identical(target))
             {
                 Console.WriteLine($"Source and target files are identical, skipping directive execution...");
                 continue;
             }
 
-            if (target.Exists)
+            if (!Directory.Exists(target.DirectoryName))
             {
-                target.Delete();
+                Directory.CreateDirectory(target.DirectoryName!);
             }
 
-            source.CopyTo(target.FullName);
+            source.CopyTo(target.FullName, overwrite: true);
         }
     }
 
@@ -75,6 +86,4 @@ public class Executor(DirectiveHandler directiveHandler)
             }
         }
     }
-
-
 }
