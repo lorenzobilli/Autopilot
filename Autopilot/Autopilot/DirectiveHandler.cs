@@ -8,7 +8,7 @@ public class DirectiveHandler
 {
     private readonly IList<IMagicVariable> _magicVariables;
 
-    public string ExecutionEnvironment { get; private set; }
+    public EnvironmentManager EnvironmentManager { get; private set; }
 
     public IList<Directive> Directives { get; private set; }
 
@@ -27,7 +27,7 @@ public class DirectiveHandler
         var directiveList = JsonSerializer.Deserialize(json, DirectiveListSourceGenerationContext.Default.DirectiveList)
             ?? throw new InvalidOperationException("Failed to deserialize directives from file.");
 
-        ExecutionEnvironment = directiveList.ExecutionEnvironment;
+        EnvironmentManager = new EnvironmentManager(directiveList.ExecutionEnvironment);
         Directives = directiveList.Directives;
 
         _magicVariables =
