@@ -9,7 +9,7 @@ public class Program
     {
         Console.WriteLine("Welcome to Autopilot!");
 
-        if (args.Length != 2)
+        if (args.Length < 2 || args.Length > 3)
         {
             Console.WriteLine(BuildErrorMessage());
             return;
@@ -24,10 +24,11 @@ public class Program
         try
         {
             var directiveHandler = new DirectiveHandler(args[0]);
+            var environmentManager = new EnvironmentManager(args.Length == 3 ? args[2] : null);
 
             directiveHandler.ParseMagicVariables();
 
-            var executor = new Executor(directiveHandler)
+            var executor = new Executor(directiveHandler, environmentManager)
             {
                 Mode = executionMode
             };
@@ -43,7 +44,7 @@ public class Program
 
     private static string BuildErrorMessage()
     {
-        var errorMessage = new StringBuilder($"Usage: Autopilot <directives .json file> <execution mode>. Valid execution modes: ");
+        var errorMessage = new StringBuilder($"Usage: Autopilot <directives .json file> <execution mode> <optional environment>. Valid execution modes: ");
         var modes = Enum.GetNames<ExecutionMode>();
 
         for (var i = 0; i < modes.Length; i++)

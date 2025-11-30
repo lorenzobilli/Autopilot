@@ -10,8 +10,6 @@ public class DirectiveHandler
 
     public string DirectivesFile { get; private set; }
 
-    public EnvironmentManager EnvironmentManager { get; private set; }
-
     public IList<Directive> Directives { get; private set; }
 
     public DirectiveHandler(string file)
@@ -38,8 +36,6 @@ public class DirectiveHandler
         {
             throw new ArgumentException("Invalid JSON file given");
         }
-
-        EnvironmentManager = new EnvironmentManager(null);
 
         _magicVariables = [new Home()];
     }

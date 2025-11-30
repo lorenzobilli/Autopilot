@@ -11,10 +11,10 @@ public class Executor
 
     private readonly EnvironmentManager _environmentManager;
 
-    public Executor(DirectiveHandler directiveHandler)
+    public Executor(DirectiveHandler directiveHandler, EnvironmentManager environmentManager)
     {
         _directiveHandler = directiveHandler;
-        _environmentManager = directiveHandler.EnvironmentManager;
+        _environmentManager = environmentManager;
         WorkingDirectory = new FileInfo(_directiveHandler.DirectivesFile).DirectoryName ??
             throw new ApplicationException("Unable to retrieve working directory from given directives file");
     }
@@ -47,7 +47,7 @@ public class Executor
 
         foreach (var directive in directives)
         {
-            if (directive.Environment != null && directive.Environment != _directiveHandler.EnvironmentManager.Environment)
+            if (directive.Environment != null && directive.Environment != _environmentManager.Environment)
             {
                 continue;
             }
@@ -80,7 +80,7 @@ public class Executor
     {
         foreach (var directive in directives)
         {
-            if (directive.Environment != null && directive.Environment != _directiveHandler.EnvironmentManager.Environment)
+            if (directive.Environment != null && directive.Environment != _environmentManager.Environment)
             {
                 continue;
             }
