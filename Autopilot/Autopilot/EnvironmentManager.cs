@@ -4,31 +4,31 @@ namespace Autopilot;
 
 public class EnvironmentManager
 {
-    public string ExecutionEnvironment { get; private set; }
+    public string Environment { get; private set; }
 
     public EnvironmentManager(string? executionEnvironment)
     {
         if (executionEnvironment != null)
         {
-            ExecutionEnvironment = executionEnvironment;
+            Environment = executionEnvironment;
         }
         else
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                ExecutionEnvironment = "Windows";
+                Environment = "Windows";
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                ExecutionEnvironment = "Linux";
+                Environment = "Linux";
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                ExecutionEnvironment = "macOS";
+                Environment = "macOS";
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
             {
-                ExecutionEnvironment = "FreeBSD";
+                Environment = "FreeBSD";
             }
             else
             {
