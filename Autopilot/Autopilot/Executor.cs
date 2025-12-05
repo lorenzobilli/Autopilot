@@ -72,18 +72,51 @@ public class Executor
                 Directory.CreateDirectory(target.DirectoryName!);
             }
 
-            source.CopyTo(target.FullName, overwrite: true);
+            var stream = target.OpenRead();
+            stream.Close();
+
+            File.Copy(source.FullName, target.FullName, overwrite: true);
         }
     }
 
     private void Deploy(IList<Directive> directives)
     {
+        var sourceBaseDirectory = Path.Combine(
+            WorkingDirectory,
+            _environmentManager.Environment
+        );
+
         foreach (var directive in directives)
         {
             if (directive.Environment != null && directive.Environment != _environmentManager.Environment)
             {
                 continue;
             }
+
+            var source = new FileInfo(Path.Combine(sourceBaseDirectory, directive.Name, directive.File));
+            var target = new FileInfo(Path.Combine(directive.Location, directive.File));
+
+            if (!source.Exists)
+            {
+                Console.WriteLine($"Source file does not exist: {source.FullName}");
+                continue;
+            }
+
+            if (source.Identical(target))
+            {
+                Console.WriteLine($"Source and target files are identical, skipping directive execution...");
+                continue;
+            }
+
+            if (!Directory.Exists(target.DirectoryName))
+            {
+                Directory.CreateDirectory(target.DirectoryName!);
+            }
+
+            var stream = target.OpenRead();
+            stream.Close();
+
+            File.Copy(source.FullName, target.FullName, overwrite: true);
         }
     }
 }
