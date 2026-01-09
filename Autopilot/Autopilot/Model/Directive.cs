@@ -5,7 +5,10 @@ namespace Autopilot.Model;
 public class Directive
 {
     [JsonPropertyName("name")]
-    public required string Name { get; init; }
+    public string? Name { get; init; }
+
+    [JsonPropertyName("group")]
+    public required string Group { get; init; }
 
     [JsonPropertyName("file")]
     public required string File { get; init; }

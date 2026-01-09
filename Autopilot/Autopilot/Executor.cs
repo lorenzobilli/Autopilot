@@ -23,12 +23,16 @@ public class Executor
 
     public void Execute()
     {
+        Console.WriteLine($"[*] Discovered N° {_directiveHandler.Directives.Count} directives to process.");
+
         if (Mode == ExecutionMode.Retrieve)
         {
+            Console.WriteLine("[*] Executing directives in retrieve mode...");
             Retrieve(_directiveHandler.Directives);
         }
         else
         {
+            Console.WriteLine("[*] Executing directories in deploy mode...");
             Deploy(_directiveHandler.Directives);
         }
     }
@@ -47,23 +51,26 @@ public class Executor
 
         foreach (var directive in directives)
         {
+            Console.WriteLine($"[*] Executing directive {directive.Name ?? string.Empty}...");
+
             if (directive.Environment != null && directive.Environment != _environmentManager.Environment)
             {
+                Console.WriteLine("-> [!] Skipping directive due to incompatible environment");
                 continue;
             }
 
             var source = new FileInfo(Path.Combine(directive.Location, directive.File));
-            var target = new FileInfo(Path.Combine(targetBaseDirectory, directive.Name, directive.File));
+            var target = new FileInfo(Path.Combine(targetBaseDirectory, directive.Group, directive.File));
 
             if (!source.Exists)
             {
-                Console.WriteLine($"Source file does not exist: {source.FullName}");
+                Console.WriteLine($"-> [!] Source file does not exist: {source.FullName}");
                 continue;
             }
 
             if (source.Identical(target))
             {
-                Console.WriteLine($"Source and target files are identical, skipping directive execution...");
+                Console.WriteLine($"-> [!] Source and target files are identical, skipping directive execution...");
                 continue;
             }
 
@@ -71,9 +78,6 @@ public class Executor
             {
                 Directory.CreateDirectory(target.DirectoryName!);
             }
-
-            var stream = target.OpenRead();
-            stream.Close();
 
             File.Copy(source.FullName, target.FullName, overwrite: true);
         }
@@ -88,23 +92,26 @@ public class Executor
 
         foreach (var directive in directives)
         {
+            Console.WriteLine($"[*] Executing directive {directive.Name ?? string.Empty}...");
+
             if (directive.Environment != null && directive.Environment != _environmentManager.Environment)
             {
+                Console.WriteLine("-> [!] Skipping directive due to incompatible environment");
                 continue;
             }
 
-            var source = new FileInfo(Path.Combine(sourceBaseDirectory, directive.Name, directive.File));
+            var source = new FileInfo(Path.Combine(sourceBaseDirectory, directive.Group, directive.File));
             var target = new FileInfo(Path.Combine(directive.Location, directive.File));
 
             if (!source.Exists)
             {
-                Console.WriteLine($"Source file does not exist: {source.FullName}");
+                Console.WriteLine($"-> [!] Source file does not exist: {source.FullName}");
                 continue;
             }
 
             if (source.Identical(target))
             {
-                Console.WriteLine($"Source and target files are identical, skipping directive execution...");
+                Console.WriteLine($"-> [!] Source and target files are identical, skipping directive execution...");
                 continue;
             }
 
@@ -112,9 +119,6 @@ public class Executor
             {
                 Directory.CreateDirectory(target.DirectoryName!);
             }
-
-            var stream = target.OpenRead();
-            stream.Close();
 
             File.Copy(source.FullName, target.FullName, overwrite: true);
         }
